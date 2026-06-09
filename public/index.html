@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VoiceMatch – Random Audio Call & Chat</title>
+  <meta name="description" content="Connect with random people globally via instant audio calls and text chat. Secure, anonymous, and modern." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Premium Floating Orbs Background -->
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+  <div class="bg-orb orb-3"></div>
+
+  <!-- Global Header / Navbar -->
+  <header class="app-header">
+    <div class="header-logo" onclick="App.goHome()">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM16.5 16H7.5C6.67 16 6 15.33 6 14.5V9.5C6 8.67 6.67 8 7.5 8H16.5C17.33 8 18 8.67 18 9.5V14.5C18 15.33 17.33 16 16.5 16Z" fill="url(#header-grad)"/>
+          <path d="M9 11.5C9.55228 11.5 10 11.0523 10 10.5C10 9.94772 9.55228 9.5 9 9.5C8.44772 9.5 8 9.94772 8 10.5C8 11.0523 8.44772 11.5 9 11.5Z" fill="white"/>
+          <path d="M15 11.5C15.5523 11.5 16 11.0523 16 10.5C16 9.94772 15.5523 9.5 15 9.5C14.4477 9.5 14 9.94772 14 10.5C14 11.0523 14.4477 11.5 15 11.5Z" fill="white"/>
+          <path d="M12 14.5C13.5 14.5 14.5 13.5 14.5 13H9.5C9.5 13.5 10.5 14.5 12 14.5Z" fill="white"/>
+          <defs>
+            <linearGradient id="header-grad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#8B5CF6"/>
+              <stop offset="1" stop-color="#06B6D4"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <span class="logo-text">VoiceMatch</span>
+    </div>
+    <div class="online-indicator">
+      <span class="pulse-dot"></span>
+      <span id="online-count">1</span> online
+    </div>
+  </header>
+
+  <!-- App Main Wrapper -->
+  <main class="app-container">
+
+    <!-- ===== SCREEN 1: IDLE / CONFIG SCREEN ===== -->
+    <div id="screen-idle" class="screen active">
+      <div class="welcome-section">
+        <h1>Connect Instantly. <span class="text-gradient">Talk Privately.</span></h1>
+        <p>A modern, safe room to converse with random people globally. Select your preferences, check your microphone, and jump right in.</p>
+      </div>
+
+      <div class="dual-dashboard">
+        <!-- Dashboard Left: Profile & Preferences -->
+        <div class="glass-card config-card">
+          <h2 class="card-sub-title">1. Your Profile & Matching Settings</h2>
+          
+          <!-- Nickname Config -->
+          <div class="form-group">
+            <label for="input-nickname">Choose Nickname</label>
+            <div class="input-with-action">
+              <input type="text" id="input-nickname" placeholder="Enter anonymous name..." maxlength="20" />
+              <button class="icon-btn-action" onclick="App.generateNickname()" title="Random Name">
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><circle cx="15.5" cy="15.5" r="1.5"></circle><circle cx="15.5" cy="8.5" r="1.5"></circle><circle cx="8.5" cy="15.5" r="1.5"></circle></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Avatar Picker -->
+          <div class="form-group">
+            <label>Select Avatar</label>
+            <div class="avatar-carousel" id="avatar-list">
+              <!-- Rendered by JS -->
+            </div>
+          </div>
+
+          <!-- Language Selector -->
+          <div class="form-group">
+            <label for="select-lang">Language Preference</label>
+            <select id="select-lang" class="custom-select">
+              <option value="en">English</option>
+              <option value="es">Español (Spanish)</option>
+              <option value="fr">Français (French)</option>
+              <option value="de">Deutsch (German)</option>
+              <option value="hi">हिन्दी (Hindi)</option>
+              <option value="ja">日本語 (Japanese)</option>
+            </select>
+          </div>
+
+          <!-- Interest Tags Selector -->
+          <div class="form-group">
+            <label>Interest Topics <span class="label-hint">(Select up to 3)</span></label>
+            <div class="interest-grid" id="interests-container">
+              <!-- Rendered by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Dashboard Right: Mic Check & Action -->
+        <div class="glass-card diagnostics-card">
+          <h2 class="card-sub-title">2. Mic Diagnostics & Test</h2>
+          <p class="section-desc">Verify your audio signals are registering before initiating calls.</p>
+
+          <div class="mic-test-area">
+            <div class="mic-preview-canvas-wrap">
+              <canvas id="pre-call-visualizer" width="300" height="70"></canvas>
+              <div class="canvas-overlay-text" id="pre-call-status">Click to test microphone</div>
+            </div>
+            <div class="mic-bar-row">
+              <div class="mic-status-badge inactive" id="mic-status-badge">
+                <span class="badge-dot"></span> <span id="mic-badge-text">Mic Access Needed</span>
+              </div>
+              <button class="btn btn-secondary btn-sm" onclick="App.testMicrophone()" id="btn-test-mic">Test Mic</button>
+            </div>
+          </div>
+
+          <div class="launch-call-zone">
+            <button id="btn-find" class="btn btn-primary btn-large" onclick="App.findPartner()">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="margin-right:8px"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+              Find a Partner
+            </button>
+            <p class="privacy-note">🔒 Fully encrypted peer-to-peer connection. Conversations are never recorded.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SCREEN 2: SEARCHING SCREEN ===== -->
+    <div id="screen-searching" class="screen">
+      <div class="glass-card search-card">
+        <!-- Sonar Radar Animation -->
+        <div class="radar-container">
+          <div class="radar-line"></div>
+          <div class="radar-circle r-1"></div>
+          <div class="radar-circle r-2"></div>
+          <div class="radar-circle r-3"></div>
+          <div class="radar-center">
+            <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="searching-pulse-icon"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path><path d="M2 12h20"></path></svg>
+          </div>
+        </div>
+
+        <h2 class="card-title text-center">Searching for a Match...</h2>
+        <p class="card-desc text-center" id="search-status-text">Scanning rooms based on your languages and interests...</p>
+        
+        <!-- Live Tips / Conversations Starter Box -->
+        <div class="tips-box">
+          <div class="tips-title">💡 Icebreaker suggestion</div>
+          <p id="dynamic-tip">"Ask them what their favorite movie is, and why they can watch it multiple times."</p>
+        </div>
+
+        <button class="btn btn-ghost" onclick="App.cancelSearch()">
+          Cancel Search
+        </button>
+      </div>
+    </div>
+
+    <!-- ===== SCREEN 3: CONNECTED SCREEN (THE MAIN CALL / CHAT ROOM) ===== -->
+    <div id="screen-connected" class="screen connected-screen-layout">
+      <!-- Call Panel -->
+      <div class="glass-card active-call-panel">
+        <!-- Call Header -->
+        <div class="call-header-info">
+          <div class="call-status">
+            <span class="live-blink-dot"></span> LIVE CALL
+          </div>
+          <div id="call-timer" class="call-timer">0:00</div>
+        </div>
+
+        <!-- Profiles Container -->
+        <div class="peers-display">
+          <!-- Profile Left (Me) -->
+          <div class="peer-card me">
+            <div class="peer-avatar-wrapper">
+              <span class="peer-avatar-emoji" id="me-avatar">👤</span>
+            </div>
+            <div class="peer-nickname" id="me-name">You</div>
+            <div class="peer-tags-list" id="me-tags">
+              <!-- JS rendered -->
+            </div>
+          </div>
+
+          <!-- Connecting Divider -->
+          <div class="call-bridge-line">
+            <div class="bridge-flow"></div>
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" class="bridge-icon"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          </div>
+
+          <!-- Profile Right (Stranger) -->
+          <div class="peer-card partner">
+            <div class="peer-avatar-wrapper partner-ring">
+              <span class="peer-avatar-emoji" id="partner-avatar">👤</span>
+            </div>
+            <div class="peer-nickname" id="partner-name">Stranger</div>
+            <div class="peer-tags-list" id="partner-tags">
+              <!-- JS rendered -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Audio Oscilloscope Canvas -->
+        <div class="visualizer-container">
+          <div class="canvas-header-row">
+            <span>Audio Frequencies</span>
+            <span class="device-hint">Mic active</span>
+          </div>
+          <canvas id="active-visualizer" width="400" height="70"></canvas>
+        </div>
+
+        <!-- Call Buttons Controls -->
+        <div class="call-action-toolbar">
+          <button id="btn-mute" class="action-circle-btn" onclick="App.toggleMute()" title="Mute Microphone (M)">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" id="mute-svg"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+            <span class="action-btn-label">Mute</span>
+          </button>
+          
+          <button id="btn-deafen" class="action-circle-btn" onclick="App.toggleDeafen()" title="Deafen Partner Audio (D)">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" id="deafen-svg"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
+            <span class="action-btn-label">Deafen</span>
+          </button>
+
+          <button class="action-circle-btn skip-btn" onclick="App.skip()" title="Skip to Next Match (Space)">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg>
+            <span class="action-btn-label">Skip</span>
+          </button>
+
+          <button class="action-circle-btn end-btn" onclick="App.endCall()" title="End Call & Disconnect (Esc)">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.42 19.42 0 0 1-6.01-6.01A19.79 19.79 0 0 1 2 4.18 2 2 0 0 1 4 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8 9.91a16 16 0 0 0 2.68 3.4z"></path></svg>
+            <span class="action-btn-label">End</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Chat Panel -->
+      <div class="glass-card active-chat-panel">
+        <div class="chat-header">
+          <h3>💬 Chat Room</h3>
+          <span class="chat-status-active">encrypted</span>
+        </div>
+        <div class="chat-messages-container" id="chat-messages">
+          <!-- Text messages loaded dynamically -->
+          <div class="system-msg">System: You are connected anonymously. Type a message below to start chatting.</div>
+        </div>
+        <form class="chat-input-bar" id="chat-form" onsubmit="App.sendChatMessage(event)">
+          <input type="text" id="chat-input" placeholder="Type a message..." maxlength="200" autocomplete="off" />
+          <button type="submit" class="chat-send-btn">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ===== SCREEN 4: ENDED SCREEN ===== -->
+    <div id="screen-ended" class="screen">
+      <div class="glass-card ended-card">
+        <div class="ended-icon-wrapper">
+          <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 18a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2"></path><rect x="3" y="4" width="18" height="11" rx="2"></rect><path d="M12 15V22"></path><path d="M9 22H15"></path></svg>
+        </div>
+        <h2 class="card-title text-center">Call Disconnected</h2>
+        <p class="card-desc text-center" id="ended-msg">The call was completed. Hope you had an amazing talk!</p>
+
+        <!-- Call stats -->
+        <div class="call-stats-box">
+          <div class="stat-item">
+            <span class="stat-lbl">Duration</span>
+            <span class="stat-val" id="ended-duration">0:00</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-lbl">Matched Interests</span>
+            <span class="stat-val" id="ended-interests">None</span>
+          </div>
+        </div>
+
+        <!-- Rating/Safety feedback -->
+        <div class="feedback-section">
+          <p class="feedback-title">How was the call?</p>
+          <div class="feedback-buttons">
+            <button class="feedback-btn" onclick="App.submitFeedback(true)" title="Safe and Respectful">
+              👍 Upvote
+            </button>
+            <button class="feedback-btn report" onclick="App.submitFeedback(false)" title="Report inappropriate behavior">
+              👎 Flag User
+            </button>
+          </div>
+        </div>
+
+        <div class="ended-actions">
+          <button class="btn btn-primary" onclick="App.findPartner()">
+            Find Next Partner
+          </button>
+          <button class="btn btn-ghost" onclick="App.goHome()">
+            Back to Dashboard
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Keyboard Shortcut Helper Toolbar (Bottom Float) -->
+  <footer class="shortcuts-helper" id="shortcuts-bar">
+    <div class="shortcut-pills">
+      <span class="pill-key">Space</span> Skip Match
+      <span class="pill-divider">|</span>
+      <span class="pill-key">M</span> Mute Mic
+      <span class="pill-divider">|</span>
+      <span class="pill-key">D</span> Deafen Audio
+      <span class="pill-divider">|</span>
+      <span class="pill-key">Esc</span> Leave Call
+    </div>
+  </footer>
+
+  <!-- Hidden Remote Audio Playback Element -->
+  <audio id="remote-audio" autoplay playsinline></audio>
+
+  <!-- Scripts -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
